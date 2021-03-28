@@ -1,5 +1,7 @@
 package routing
 
+import "strings"
+
 // TODO: move most of the prose to markdown, leave only implementation-related text
 
 // This guide walks through the implementation of a simple routing system, that is often used in
@@ -85,21 +87,28 @@ func doubleHandler(in string) string {
 // constantHandler("a") -> "kurwa"
 // constantHandler("b") -> "kurwa"
 func constantHandler(in string) string {
-	panic("not implemented")
+	const constString = "kurwa"
+
+	return constString
 }
 
 // an identity handler that returns input as output
 // identityHandler("a") -> "a"
 // identityHandler("b") -> "b"
 func identityHandler(in string) string {
-	panic("not implemented")
+	return in
 }
 
 // a handler that appends an exclamation mark to input:
 // h("a") -> "a!"
 // h("b") -> "b!"
 func appendBangHandler(in string) string {
-	panic("not implemented")
+	const appendix = "!"
+	var str strings.Builder
+	s := append([]byte(in), []byte(appendix)...)
+	str.Write(s)
+
+	return str.String()
 }
 
 // Advanced handlers
@@ -113,32 +122,75 @@ func appendBangHandler(in string) string {
 
 // captHandler capitalizes input
 func captHandler(in string) string {
-	panic("not implemented")
+	return strings.Title(in)
 }
 
 // captBangHandler capitalizes input and adds "!" to the end
 func captBangHandler(in string) string {
-	panic("not implemented")
+	const appendix = "!"
+	var str strings.Builder
+	capitalized := strings.Title(in)
+	s := append([]byte(capitalized), []byte(appendix)...)
+	str.Write(s)
+
+	return str.String()
 }
 
 // revHandler reverses input
 func revHandler(in string) string {
-	panic("not implemented")
+	runes := []rune(in)
+
+	for i, j := 0, len(runes) - 1; i < j; i, j = i + 1, j - 1 {
+		runes[i], runes[j] = runes[j], runes[i]
+	}
+
+	return string(runes)
 }
 
 // revBangHandler reverses input and adds "!" to the end
 func revBangHandler(in string) string {
-	panic("not implemented")
+	const appendix = "!"
+	var str strings.Builder
+	runes := []rune(in)
+
+	for i, j := 0, len(runes) - 1; i < j; i, j = i + 1, j - 1 {
+		runes[i], runes[j] = runes[j], runes[i]
+	}
+
+	s := append([]byte(string(runes)), []byte(appendix)...)
+	str.Write(s)
+
+	return str.String()
 }
 
 // revCaptHandler reverses the input and then capitalizes it
 func revCaptHandler(in string) string {
-	panic("not implemented")
+	runes := []rune(in)
+
+	for i, j := 0, len(runes) - 1; i < j; i, j = i + 1, j - 1 {
+		runes[i], runes[j] = runes[j], runes[i]
+	}
+
+	s := string(runes)
+
+	return strings.Title(s)
 }
 
 // revCapBangHandler: capitalizes input, then reverses it and then adds "!" to the end
 func captRevBangHandler(in string) string {
-	panic("not implemented")
+	const appendix = "!"
+	var stringBuilder strings.Builder
+	capitalized := strings.Title(in)
+	runes := []rune(capitalized)
+
+	for i, j := 0, len(runes) - 1; i < j; i, j = i + 1, j - 1 {
+		runes[i], runes[j] = runes[j], runes[i]
+	}
+
+	s := append([]byte(string(runes)), []byte(appendix)...)
+	stringBuilder.Write(s)
+
+	return stringBuilder.String()
 }
 
 // 2. Middlewares
