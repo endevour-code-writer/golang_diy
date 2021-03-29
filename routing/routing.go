@@ -238,29 +238,49 @@ func doubleMiddleware(h Handler) Handler {
 // const middleware that returns a handler that ignores its input and always
 // returns string "kurwa"
 func constMiddleware(h Handler) Handler {
-	panic("not implemented")
+	return func(s string) string {
+		return h(constantHandler(s))
+	}
 }
 
 // capitalizeMiddleware returns a handler that capitalizes input and then calls given handler on the result
 func capitalizeMiddleware(h Handler) Handler {
-	panic("not implemented")
+	return func(s string) string {
+		return h(captHandler(s))
+	}
 }
 
 // bangifyMiddleware returns a handler that adds a "!" to the end of its input and then calls given handler on the result
 func bangifyMiddleware(h Handler) Handler {
-	panic("not implemented")
+	return func(s string) string {
+		return h(appendBangHandler(s))
+	}
 }
 
 // reverseMiddleware returns a handler that reverses its input and then calls given handler on the result
 func reverseMiddleware(h Handler) Handler {
-	panic("not implemented")
+	return func(s string) string {
+		return h(revHandler(s))
+	}
 }
 
 // composeMiddleware takes many handlers, returns a handler that takes a string,
 // and then applies first handler to this string, then applies second handler to the result, and so on...
 // Remember when someone said you can only use one handler per route? Pfff.
 func composeMiddleware(hs ...Handler) Handler {
-	panic("not implemented")
+	if len(hs) == 1 {
+		return hs[0]
+	}
+
+	var handler Handler
+
+	for _, h := range hs {
+		handler = func(s string) string {
+			return h(s)
+		}
+	}
+
+	return handler
 }
 
 // Middleware factory: implement a function that returns a middleware.
@@ -268,8 +288,15 @@ func composeMiddleware(hs ...Handler) Handler {
 // return a middleware that will return a handler that will append s
 // to every input and pass the result to the original handler
 func makeAppender(s string) Middleware {
-	// todo: implement
-	panic("not implemented")
+	return func(handler Handler) Handler {
+		return func(in string) string {
+			var str strings.Builder
+			appended = append([]byte(in), []byte(s)...)
+			str.Write(appended)
+
+			return str.String()
+		}
+	}
 }
 
 // Middlewares are used by routing system, to mix in functionality. However, to understand them
