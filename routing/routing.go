@@ -268,19 +268,21 @@ func reverseMiddleware(h Handler) Handler {
 // and then applies first handler to this string, then applies second handler to the result, and so on...
 // Remember when someone said you can only use one handler per route? Pfff.
 func composeMiddleware(hs ...Handler) Handler {
-	if len(hs) == 1 {
-		return hs[0]
-	}
+	var resultString string
 
-	var handler Handler
+	return func(s string) string {
+		l := len(hs)
 
-	for _, h := range hs {
-		handler = func(s string) string {
-			return h(s)
+		for i := 0; i < l; i++ {
+			resultString = hs[i](s)
+
+			if i < l {
+				s = resultString
+			}
 		}
-	}
 
-	return handler
+		return resultString
+	}
 }
 
 // Middleware factory: implement a function that returns a middleware.
@@ -291,10 +293,10 @@ func makeAppender(s string) Middleware {
 	return func(handler Handler) Handler {
 		return func(in string) string {
 			var str strings.Builder
-			appended = append([]byte(in), []byte(s)...)
+			appended := append([]byte(in), []byte(s)...)
 			str.Write(appended)
 
-			return str.String()
+			return handler(str.String())
 		}
 	}
 }
